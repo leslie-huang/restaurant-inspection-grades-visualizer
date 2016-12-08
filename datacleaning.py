@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # (2) drop rows and columns that won't be used, to reduce the size of the DF that undergoes cleaning
     # (3) clean remaining DF
     
-    ### (1) Fixing the names
+    ### (1) Fixing names and formatting
     restaurant_grades = clean_colnames(restaurant_grades)
     restaurant_grades = restaurant_grades.rename(columns = {"dba": "restaurant"})
     restaurant_grades = strip_whitespace(restaurant_grades, ["street", "restaurant"])
@@ -106,14 +106,14 @@ if __name__ == "__main__":
 
     # Keep only needed columns
     # Note: I drop "building", "street", "zip" AFTER using them to construct address_id
-    sidewalk_licenses = sidewalk_licenses[["license_nbr", "lic_status", "city", "issuance", "business_name", "business_name2", "issuance_dd", "address_id"]]
+    sidewalk_licenses = sidewalk_licenses[["lic_status", "swc_type", "swc_sq_ft", "issuance", "business_name", "business_name2", "issuance_dd", "address_id"]]
 
 
 ### Merge and output the merged file
 
     # merge on unique address_id var
     merged = pd.merge(restaurant_grades, sidewalk_licenses, left_on = "address_id", right_on = "address_id", how = "left")
-
+    
     # write cleaned data to file
     with open("cleaned_data.csv", "w") as file:
-        merged.to_csv(file)
+        merged.to_csv(file, index = False)

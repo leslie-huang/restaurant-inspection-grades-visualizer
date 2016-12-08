@@ -72,23 +72,6 @@ class DataCleaningTests(RestaurantTestCase):
             make_primary_cuisine(self.dummy_data, "CUISINE DESCRIPTION", "primary")["primary"],
             pd.Series({0: "Italian", 1: "Pizza", 2: "Sandwiches", 3: "Soup", 4: ""})
         )
-   
-    def test_drop_multiple_column_nulls(self):
-        '''
-        Check that function drops all observations with any nulls in specified cols
-        '''
-        npt.assert_array_equal(
-            drop_multiple_column_nulls(self.dummy_data, ["CUISINE DESCRIPTION", "NAME", "STREET"]),
-            pd.DataFrame(
-                {
-                    "BUILDING": ["200", "4", "5"], 
-                    "CUISINE DESCRIPTION": ["Italian/Pizza", "Sandwiches, bread, stuff", "Soup, water"], 
-                    "NAME": ["Olive  Garden", "Sandwich WORLD  ", "Soup Waterpark"], 
-                    "STREET": ["West  4th", "West  3rd", "Bleecker"]
-                },
-                dtype = str
-            )
-        )
 
 if __name__ == "__main__":        
     unittest.main()

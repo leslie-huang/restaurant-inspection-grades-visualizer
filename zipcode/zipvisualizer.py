@@ -23,9 +23,10 @@ class ZipGrades(object):
         Generates pie graph of letter grades awarded in cuisine category
         '''
         data = self.get_zip_data()
-        data = data[data["grade"].isin(["a", "b", "c"])]
-        
-        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Zipcode: {}".format(self.zipcode))
+        grades = ["a", "b", "c", "not yet graded"]
+        data = data[data["grade"].isin(grades)]
+                
+        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Zipcode: {}".format(self.zipcode), labels = map(lambda x: x.title(), grades))
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
         plt.show()
