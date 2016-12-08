@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # drop observations missing essential information:
     # (a) name, category, street address or (b) both score and grade
-    restaurant_grades = drop_multiple_column_nulls(restaurant_grades, ["restaurant", "street"])
+    restaurant_grades = drop_multiple_column_nulls(restaurant_grades, ["restaurant", "street", "cuisinedescription"])
     restaurant_grades = restaurant_grades[pd.notnull(restaurant_grades["score"]) | pd.notnull(restaurant_grades["grade"])]
     
     # drop observations with negative scores (data entry error)
