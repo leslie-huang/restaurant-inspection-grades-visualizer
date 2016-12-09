@@ -5,7 +5,6 @@ class InvalidCuisineError(Exception):
     '''
     Error if user inputs a cuisine not contained in dataset
     '''
-        
     def __str__(self):
         return "Cuisine not in list. Try something like 'pizza' or 'Japanese'."
 

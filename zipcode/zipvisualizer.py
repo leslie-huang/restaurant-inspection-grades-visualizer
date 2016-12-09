@@ -12,8 +12,7 @@ class ZipGrades(object):
         self.data = data
         self.zipcode = zipcode
         
-    ### Methods to subset appropriate data and
-    # perform calculations and sorting to prepare for graphing
+    ### Methods to subset appropriate data, and perform calculations and sorting to prepare for graphing
 
     def get_zip_data(self):
         '''
@@ -94,7 +93,7 @@ class ZipGrades(object):
         
     def violations_by_category(self):
         '''
-        Generates a bar graph of inspection violations by category in that zip 
+        Generates a bar graph of inspection violations by category in this zipcode
         '''
         grouped = self.group_scores_by_category()
         grouped.score.plot(kind = "barh")
@@ -111,10 +110,8 @@ class ZipGrades(object):
         '''
         best_data, worst_data, = self.get_best_and_worst_data()
         best_name, worst_name = self.get_best_and_worst_names()
-        x_best = best_data["inspectiondate"]
-        y_best = best_data["score"]
-        x_worst = worst_data["inspectiondate"]
-        y_worst = worst_data["score"]
+        x_best, y_best = best_data["inspectiondate"], best_data["score"]
+        x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 
         plt.plot_date(x = x_best, y = y_best, fmt = "r-", label = "{}".format(best_name.title()))
         plt.plot_date(x = x_worst, y = y_worst, fmt = "b-", label = "{}".format(worst_name.title()))
@@ -122,7 +119,7 @@ class ZipGrades(object):
         plt.legend(loc = "upper right")
         plt.ylabel("Inspection Violations Score")
         plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) Restaurants Located in {}".format(best_name.title(), worst_name.title(), self.zipcode))
-        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \n To exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -30), xycoords = "axes fraction", textcoords = "offset points", va = "top")
+        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -30), xycoords = "axes fraction", textcoords = "offset points", va = "top")
         
         
         plt.show()

@@ -19,7 +19,8 @@ def quitting_input(prompt, input_function = input):
     
 def prompt_for_browsechoice(restaurant_data, input_function = input):
     '''
-    Prompt user to choose browse type, and executes appropriate program
+    Prompt user to choose how they want to browse the data, 
+    and executes appropriate program
     '''
     choices = {
         "restaurant": (prompt_for_restaurant_name, RestaurantGrades), 
@@ -128,7 +129,7 @@ def validate_restaurant_name(input_name, restaurant_data):
     try:
         restaurant_name = input_name.lower()
         
-        if restaurant_name not in restaurant_data.restaurant.unique():
+        if restaurant_name not in restaurant_data.index.unique():
             raise InvalidRestaurantNameError()
         
         else:

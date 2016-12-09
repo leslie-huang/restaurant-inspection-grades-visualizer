@@ -1,17 +1,21 @@
 # Author: Leslie Huang (lh1036)
-# Description: This program runs the 
+# Description: Main for the Restaurant Grades Explorer.
+# This program loads in the cleaned dataset and uses interactive 
+# prompts to allow the user to search by restaurant name, cuisine 
+# category, or zip code. The program will generate data visualizations 
+# based on the user's request.  
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from userinput import *
 from cuisine.cuisinevisualizer import CuisineGrades
 from restaurant.restaurantvisualizer import RestaurantGrades
 from zipcode.zipvisualizer import ZipGrades
-from userinput import *
 
 plt.style.use("ggplot")
 
-### Set up the DFs for analysis
+### Set up the DF for analysis
 restaurant_data = pd.read_csv("cleaned_data.csv", keep_default_na = False, na_values = [])
 restaurant_data = restaurant_data.set_index(["restaurant"])
 
@@ -19,15 +23,12 @@ restaurant_data = restaurant_data.set_index(["restaurant"])
 for col_name in ["inspectiondate", "gradedate", "issuance_dd"]:
     restaurant_data[col_name] = pd.to_datetime(restaurant_data[col_name], format = "%m/%d/%Y", errors = "coerce")
     
-a = ZipGrades(10013, restaurant_data)
 
-a.timeseries_best_and_worst()
-#
-# if __name__ == "__main__":
-#
-#     try:
-#         while True:
-#             prompt_for_browsechoice(restaurant_data)
-#
-#     except (QuitError, KeyboardInterrupt):
-#         pass
+if __name__ == "__main__":
+
+    try:
+        while True:
+            prompt_for_browsechoice(restaurant_data)
+
+    except (QuitError, KeyboardInterrupt):
+        pass
