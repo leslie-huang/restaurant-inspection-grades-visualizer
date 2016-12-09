@@ -42,6 +42,7 @@ def prompt_for_cuisine(restaurant_data, input_function = input):
     '''
     Prompt user for year. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
+    @param input_function: default is the Python input method; this is to allow for unittesting
     '''
     
     while True:
@@ -75,6 +76,7 @@ def prompt_for_zip(restaurant_data, input_function = input):
     '''
     Prompt user for zipcode. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
+    @param input_function: default is the Python input method; this is to allow for unittesting
     '''
     
     while True:
@@ -108,6 +110,7 @@ def prompt_for_restaurant_name(restaurant_data, input_function = input):
     '''
     Prompt user for restaurant name. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
+    @param input_function: default is the Python input method; this is to allow for unittesting
     '''
     
     while True:
