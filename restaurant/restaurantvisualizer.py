@@ -14,24 +14,41 @@ class RestaurantGrades(object):
 
     def get_restaurant_data(self):
         '''
-        Returns a DF subset of the data for the restaurant in question
+        Returns a DF subset for the specified restaurant, sorted by date
         '''
-        return self.data.ix[self.restaurant_name]
+        return self.data.ix[self.restaurant_name].sort_values(by = "inspectiondate")
+    
+    def get_lettergrades(self):
+        '''
+        Returns a DF of lettergrades formatted for graphing
+        '''
+        data = self.get_restaurant_data()
+        grades = ["a", "b", "c", "not yet graded"]
+        data = data[data["grade"].isin(grades)]
+        data["grade"] = data["grade"].apply(lambda x: x.title())
+        return data
 
     def graph_restaurant_timeseries(self):
+        '''
+        Plots a line graph of inspection violation scores over time
+        '''
         data = self.get_restaurant_data()
         y = data["score"]
         x = data["inspectiondate"]
     
-        plt.plot_date(x = x, y = y)
+        plt.plot_date(x = x, y = y, fmt = "r-")
         plt.ylabel("Inspection Violations")
-        plt.title("Inspection Violations at {} Over Time".format(self.restaurant_name))
+        plt.title("Inspection Violations at {} Over Time".format(self.restaurant_name.title()))
         plt.show()
     
     def graph_restaurant_lettergrade_frequency(self):
-        data = self.get_restaurant_data()
-        data = data[data["grade"].isin(["A", "B", "C", "Not Yet Graded"])]
-        data.grade.value_counts().plot(kind = "hist", title = "Letter Grades Awarded to {}".format(self.restaurant_name))
+        '''
+        Plots a bar graph of frequency of letter grades
+        '''
+        data = self.get_lettergrades()
+        print(data.head())
+        
+        data["grade"].value_counts().plot(kind = "bar", title = "Letter Grades Awarded to {}".format(self.restaurant_name.title()))
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
         plt.show()

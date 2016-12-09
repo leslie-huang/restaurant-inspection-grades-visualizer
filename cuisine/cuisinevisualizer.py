@@ -19,7 +19,26 @@ class CuisineGrades(object):
         '''
         return self.data[self.data["cuisine_primary"] == self.cuisine_name]
     
-    def graph_cuisine_lettergrade_frequency(self):
+    def group_by_sidewalk(self):
+        '''
+        Returns a GroupBy DF of mean scores by sidewalk cafe type
+        '''
+        data = self.get_cuisine_data()
+        
+        # add an index label for restaurants that don't have any sidewalk cafe
+        data.loc[:, "swc_type"] = data["swc_type"].replace("", "no cafe", regex = True)
+        
+        return data.groupby("swc_type").mean()
+    
+    def calculate_mean_by_restaurant(self):
+        '''
+        Returns a DF of mean inspection violations per restaurant, sorted ascending value
+        '''
+        data = self.get_cuisine_data()
+        data = data.groupby(data.index)[["score"]].mean()
+        return data.sort_values(by = "score")
+    
+    def graph_lettergrade_frequency(self):
         '''
         Generates pie graph of letter grades awarded in cuisine category
         '''
@@ -32,32 +51,26 @@ class CuisineGrades(object):
         plt.ylabel("Number of Times Awarded")
         plt.show()
     
-    def boxplot_cuisine_scores(self):
+    def boxplot_by_boro(self):
         '''
-        Show boxplot of restaurant violations in this category
+        Show boxplot of restaurant violations in this category, grouped by borough
         '''
-        data = self.get_cuisine_data()
-        plt.boxplot(data["score"], vert = False)
-        plt.title("Distribution of Inspection Violations in Category: {}".format(self.cuisine_name))
-        plt.xlabel("Inspection Violation Scores")
-        plt.show()
+        self.data.boxplot(by = "boro", column = "score", return_type = "dict", rot = 90)
+        plt.xlabel("Boroughs")
+        plt.ylabel("Inspection Violations")
+        #plt.subplots_adjust(bottom = 0.3)
     
-    def get_scores_grouped_sidewalk(self):
-        '''
-        Return a GroupBy DF of mean scores by sidewalk cafe type
-        '''
-        data = self.get_cuisine_data()
+        # add title and get rid of automatically added title
+        plt.title("Spread of Violations by Borough for {} Restaurants".format(self.cuisine_name))
+        plt.suptitle("")
         
-        # add an index label for restaurants that don't have any sidewalk cafe
-        data.loc[:, "swc_type"] = data["swc_type"].replace("", "no cafe", regex = True)
-        
-        return data.groupby("swc_type").mean()
+        plt.show()
     
     def bargraphs_by_sidewalk_type(self):
         '''
-        Show bargraph of restaurant violations by sidewalk cafe type
+        Show bargraph of average violations by sidewalk cafe type
         '''
-        grouped = self.get_scores_grouped_sidewalk()
+        grouped = self.group_by_sidewalk()
                 
         grouped.score.plot(kind = "bar", rot = 90)
         plt.subplots_adjust(bottom = 0.5)
@@ -66,7 +79,19 @@ class CuisineGrades(object):
         plt.xlabel("Type of Sidewalk Cafe (if any)")
         plt.show()
     
+    def violations_per_restaurant(self):
+        '''
+        Distribution of average violations per restaurant
+        '''
+        data = self.calculate_mean_by_restaurant()
+        data.plot(kind = "bar")
+        plt.xticks([])
+        
+        plt.show()
+    
     def make_graphs(self):
-        self.graph_cuisine_lettergrade_frequency()
-        self.boxplot_cuisine_scores()
+        self.graph_lettergrade_frequency()
+        self.boxplot_by_boro()
+        self.bargraphs_by_sidewalk_type()
+        self.violations_per_restaurant()
         

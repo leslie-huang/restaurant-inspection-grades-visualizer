@@ -19,9 +19,9 @@ restaurant_data = restaurant_data.set_index(["restaurant"])
 for col_name in ["inspectiondate", "gradedate", "issuance_dd"]:
     restaurant_data[col_name] = pd.to_datetime(restaurant_data[col_name], format = "%m/%d/%Y", errors = "coerce")
     
-a = CuisineGrades("american", restaurant_data)
-a.bargraphs_by_sidewalk_type()
+a = ZipGrades(10013, restaurant_data)
 
+a.timeseries_best_and_worst()
 #
 # if __name__ == "__main__":
 #
