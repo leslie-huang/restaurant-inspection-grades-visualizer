@@ -12,11 +12,13 @@ from userinput import *
 from cuisine.cuisinevisualizer import CuisineGrades
 from restaurant.restaurantvisualizer import RestaurantGrades
 from zipcode.zipvisualizer import ZipGrades
+from datacleaning import clean_data
 
 plt.style.use("ggplot")
 
 ### Set up the DF for analysis
-restaurant_data = pd.read_csv("cleaned_data.csv", keep_default_na = False, na_values = [])
+#restaurant_data = pd.read_csv("cleaned_data.csv", keep_default_na = False, na_values = [])
+restaurant_data = clean_data()
 restaurant_data = restaurant_data.set_index(["restaurant"])
 
 # convert date to datetime object for timeseries analysis

@@ -2,6 +2,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from string import capwords
+
 plt.style.use("ggplot")
 pd.options.mode.chained_assignment = None
 
@@ -13,6 +15,8 @@ class CuisineGrades(object):
         self.data = data
         self.cuisine_name = cuisine_name
 
+    ### Class methods for subsetting and returning the data
+    
     def get_cuisine_data(self):
         '''
         Returns a DF subset of the data for the cuisine in question
@@ -26,9 +30,17 @@ class CuisineGrades(object):
         data = self.get_cuisine_data()
         
         # add an index label for restaurants that don't have any sidewalk cafe
-        data.loc[:, "swc_type"] = data["swc_type"].replace("", "no cafe", regex = True)
+        data.loc[:, "swc_type"] = data["swc_type"].replace(np.nan, "no cafe", regex = True)
         
         return data.groupby("swc_type").mean()
+    
+    def get_lettergrade_data(self):
+        '''
+        Gets data on lettergrades
+        '''
+        data = self.get_cuisine_data()
+        grades = ["a", "b", "c", "not yet graded", "grade pending"]
+        return (data[data["grade"].isin(grades)], grades)
     
     def calculate_mean_by_restaurant(self):
         '''
@@ -38,34 +50,48 @@ class CuisineGrades(object):
         data = data.groupby(data.index)[["score"]].mean()
         return data.sort_values(by = "score")
     
+    def get_boro_data(self):
+        '''
+        Gets data on the 5 boroughs and formats labels
+        '''
+        data = self.get_cuisine_data()
+        data["boro"] = data["boro"].apply(capwords)
+        boros = ["Manhattan", "Queens", "Bronx", "Brooklyn", "Staten Island"]
+        return data[data["boro"].isin(boros)]
+
+    ### Class methods for visualizing the data
+    
     def graph_lettergrade_frequency(self):
         '''
         Generates pie graph of letter grades awarded in cuisine category
         '''
-        data = self.get_cuisine_data()
-        grades = ["a", "b", "c", "not yet graded"]
-        data = data[data["grade"].isin(grades)]
+        data, grades = self.get_lettergrade_data()
         
-        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Category: {}".format(self.cuisine_name.title()), labels = map(lambda x: x.title(), grades))
+        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Category: {}".format(capwords(self.cuisine_name)), labels = map(capwords, grades), rot = 0)
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
-        plt.show()
-    
+        
+        plt.savefig("{}_restaurants_lettergrades.pdf".format(capwords(self.cuisine_name)))
+        plt.close()   
+            
     def boxplot_by_boro(self):
         '''
         Show boxplot of restaurant violations in this category, grouped by borough
         '''
-        self.data.boxplot(by = "boro", column = "score", return_type = "dict", rot = 90)
+        data = self.get_boro_data()
+        
+        data.boxplot(by = "boro", column = "score", return_type = "dict", rot = 90)
         plt.xlabel("Boroughs")
         plt.ylabel("Inspection Violations")
-        #plt.subplots_adjust(bottom = 0.3)
+        plt.subplots_adjust(bottom = 0.3)
     
         # add title and get rid of automatically added title
-        plt.title("Spread of Violations by Borough for {} Restaurants".format(self.cuisine_name))
+        plt.title("Spread of Violations by Borough for {} Restaurants".format(capwords(self.cuisine_name)))
         plt.suptitle("")
         
-        plt.show()
-    
+        plt.savefig("{}_restaurant_violations_by_borough.pdf".format(capwords(self.cuisine_name)))
+        plt.close()    
+        
     def bargraphs_by_sidewalk_type(self):
         '''
         Show bargraph of average violations by sidewalk cafe type
@@ -74,21 +100,27 @@ class CuisineGrades(object):
                 
         grouped.score.plot(kind = "bar", rot = 90)
         plt.subplots_adjust(bottom = 0.5)
-        plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type: {}".format(self.cuisine_name.title()))
+        plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type: {}".format(capwords(self.cuisine_name)))
         plt.ylabel("Average Inspection Violation Scores")
         plt.xlabel("Type of Sidewalk Cafe (if any)")
-        plt.show()
-    
+        
+        plt.savefig("{}_restaurant_violations_by_cafe_type.pdf".format(capwords(self.cuisine_name)))
+        plt.close()    
+            
     def violations_per_restaurant(self):
         '''
-        Distribution of average violations per restaurant
+        Distribution of Mean violations per restaurant
         '''
         data = self.calculate_mean_by_restaurant()
-        data.plot(kind = "bar")
+        data.plot(kind = "bar", legend = False)
+        plt.title("Distribution of Mean Inspection Violations for {} Restaurants".format(capwords(self.cuisine_name)))
         plt.xticks([])
+        plt.ylabel("Mean Inspection Violations Score")
+        plt.xlabel("{} Restaurants".format(capwords(self.cuisine_name)))
         
-        plt.show()
-    
+        plt.savefig("{}_restaurant_distribution.pdf".format(capwords(self.cuisine_name)))
+        plt.close()    
+            
     def make_graphs(self):
         self.graph_lettergrade_frequency()
         self.boxplot_by_boro()

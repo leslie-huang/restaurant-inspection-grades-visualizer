@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Author: Leslie Huang (lh1036)
 # Description: This program imports raw data files 
 # (#1: Restaurant Grades Data, #2: Sidewalk Cafe Data), 
@@ -7,6 +8,7 @@
 # unit testing. However, data cleaning is specific to the messiness of the data; however, 
 # I do not write functions or unittests for the execution of simple Pandas methods, 
 # for example drop_duplicate.
+
 
 import pandas as pd
 import re
@@ -45,8 +47,7 @@ def drop_multiple_column_nulls(df, cols_to_drop):
         df = df[pd.notnull(df[col])]
     return df
 
-if __name__ == "__main__":
-
+def clean_data():
     ### read in (1) Restaurant Inspection Dataset downloaded from  https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/xx67-kt59
     # PLEASE NOTE: The online version is regularly updated. I use the 11/27/16 version.
     restaurant_grades = pd.read_csv("DOHMH_New_York_City_Restaurant_Inspection_Results.csv", dtype = str, keep_default_na = False, na_values = [])
@@ -83,6 +84,10 @@ if __name__ == "__main__":
     # clean up whitespace and lowercase entire DF
     restaurant_grades = convert_lowercase(restaurant_grades)
     
+    # format scores and grades
+    restaurant_grades["score"] = pd.to_numeric(restaurant_grades["score"])
+    restaurant_grades["grade"].replace(to_replace = ["p", "z"], value = "grade pending", inplace = True)
+    
     # create unique ID var from address
     restaurant_grades = concat_cols(restaurant_grades, ["building", "street", "zipcode"], "address_id")
     
@@ -112,8 +117,10 @@ if __name__ == "__main__":
 ### Merge and output the merged file
 
     # merge on unique address_id var
-    merged = pd.merge(restaurant_grades, sidewalk_licenses, left_on = "address_id", right_on = "address_id", how = "left")
+    return pd.merge(restaurant_grades, sidewalk_licenses, left_on = "address_id", right_on = "address_id", how = "left")
+
+if __name__ == "__main__":    
     
     # write cleaned data to file
     with open("cleaned_data.csv", "w") as file:
-        merged.to_csv(file, index = False)
+        clean_data().to_csv(file, index = False)

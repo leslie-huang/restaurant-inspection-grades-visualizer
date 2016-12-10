@@ -93,18 +93,13 @@ def validate_zip(input_zip, restaurant_data):
     Raises InvalidCuisineError if (1) input is not in data or 
     (2) input is invalid type (e.g. a string)
     '''
-    
-    try:
-        zipcode = int(input_zip)
-        
-        if zipcode not in restaurant_data.zipcode.astype(int).unique():
-            raise InvalidZipError()
-        
-        else:
-            return zipcode
-            
-    except ValueError:
+
+    if input_zip not in restaurant_data.zipcode.unique():
         raise InvalidZipError()
+    
+    else:
+        return input_zip
+        
 
 def prompt_for_restaurant_name(restaurant_data, input_function = input):
     '''

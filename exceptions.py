@@ -20,7 +20,7 @@ class InvalidRestaurantNameError(Exception):
     Error if user inputs a restaurant not in the dataset
     '''
     def __str__(self):
-        return "We can't find a restaurant by that name. Try something like 'Tacombi'."
+        return "We can't find a restaurant by that name. Try something like 'Qi'."
 
 class QuitError(Exception):
     '''

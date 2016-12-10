@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from string import capwords
 plt.style.use("ggplot")
 
 class ZipGrades(object):
@@ -12,7 +13,7 @@ class ZipGrades(object):
         self.data = data
         self.zipcode = zipcode
         
-    ### Methods to subset appropriate data, and perform calculations and sorting to prepare for graphing
+    ### Methods to subset appropriate data, perform calculations and sort to prepare for graphing
 
     def get_zip_data(self):
         '''
@@ -27,9 +28,17 @@ class ZipGrades(object):
         data = self.get_zip_data()
         
         # add an index label for restaurants that don't have any sidewalk cafe
-        data.loc[:, "swc_type"] = data["swc_type"].replace("", "no cafe", regex = True)
+        data.loc[:, "swc_type"] = data["swc_type"].replace(np.nan, "no cafe", regex = True)
         
         return data.groupby("swc_type").mean()
+    
+    def get_lettergrade_data(self):
+        '''
+        Gets data on lettergrades
+        '''
+        data = self.get_zip_data()
+        grades = ["a", "b", "c", "not yet graded", "grade pending"]
+        return data[data["grade"].isin(grades)]
         
     def group_scores_by_category(self):
         '''
@@ -37,7 +46,7 @@ class ZipGrades(object):
         '''
         data = self.get_zip_data()
         grouped = data.groupby("cuisine_primary").mean()
-        grouped.index = pd.Index(cat.title() for cat in grouped.index)
+        grouped.index = pd.Index(capwords(cuisine) for cuisine in grouped.index)
         return grouped.sort_values(by = "score")
     
     def get_best_and_worst_names(self):
@@ -73,11 +82,13 @@ class ZipGrades(object):
         grades = ["a", "b", "c", "not yet graded"]
         data = data[data["grade"].isin(grades)]
                 
-        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Zipcode: {}".format(self.zipcode), labels = map(lambda x: x.title(), grades))
+        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Zipcode: {}".format(self.zipcode), labels = map(capwords, grades))
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
-        plt.show()
-    
+        
+        plt.savefig("{}_restaurant_lettergrades.pdf".format(self.zipcode))
+        plt.close()   
+            
     def boxplot_zip_scores(self):
         '''
         Boxplot of scores in this zipcode, grouped by sidewalk cafe category
@@ -89,7 +100,9 @@ class ZipGrades(object):
         plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type in {}".format(self.zipcode))
         plt.ylabel("Average Inspection Violation Scores")
         plt.xlabel("Type of Sidewalk Cafe (if any)")
-        plt.show()
+        
+        plt.savefig("{}_restaurant_scores_by_cafe_type.pdf".format(self.zipcode))
+        plt.close()           
         
     def violations_by_category(self):
         '''
@@ -101,8 +114,9 @@ class ZipGrades(object):
         plt.ylabel("Cuisine")
         plt.title("Mean Inspection Violations for Cuisine Categories in {}".format(self.zipcode))
         
-        plt.show()
-        
+        plt.savefig("{}_restaurant_violations_by_category.pdf".format(self.zipcode))
+        plt.close()   
+                
     def timeseries_best_and_worst(self):
         '''
         Timeseries of inspection scores for the best and worst restaurants in this zip
@@ -113,20 +127,23 @@ class ZipGrades(object):
         x_best, y_best = best_data["inspectiondate"], best_data["score"]
         x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 
-        plt.plot_date(x = x_best, y = y_best, fmt = "r-", label = "{}".format(best_name.title()))
-        plt.plot_date(x = x_worst, y = y_worst, fmt = "b-", label = "{}".format(worst_name.title()))
+        plt.plot_date(x = x_best, y = y_best, fmt = "r-", label = "{}".format(capwords(best_name)))
+        plt.plot_date(x = x_worst, y = y_worst, fmt = "b-", label = "{}".format(capwords(worst_name)))
+        plt.xticks(rotation = "vertical")
         
         plt.legend(loc = "upper right")
         plt.ylabel("Inspection Violations Score")
-        plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) Restaurants Located in {}".format(best_name.title(), worst_name.title(), self.zipcode))
-        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -30), xycoords = "axes fraction", textcoords = "offset points", va = "top")
+        plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) Restaurants Located in {}".format(capwords(best_name), capwords(worst_name), self.zipcode))
         
+        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -100), xycoords = "axes fraction", textcoords = "offset points", va = "top")
+        plt.subplots_adjust(bottom = 0.5)
         
-        plt.show()
-    
+        plt.savefig("{}_zip_best_worst_restaurants_timeseries.pdf".format(self.zipcode))
+        plt.close()   
+            
     def make_graphs(self):
         self.graph_lettergrade_frequency()
-        self.boxplot_zip_by_sidewalk()
+        self.boxplot_zip_scores()
         self.violations_by_category()
         self.timeseries_best_and_worst()
         
