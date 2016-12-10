@@ -91,9 +91,9 @@ def clean_data():
     # create unique ID var from address
     restaurant_grades = concat_cols(restaurant_grades, ["building", "street", "zipcode"], "address_id")
     
-    # set first-listed cuisine as the primary cuisine
+    # set first-listed cuisine as the primary cuisine and fix a unicode rendering error
     restaurant_grades = make_primary_cuisine(restaurant_grades, "cuisinedescription", "cuisine_primary")
-      
+    restaurant_grades["cuisine_primary"].replace(to_replace = ["cafÃ£Â©", "cafã©"], value = "cafe", inplace = True)  
       
     ### Read in (2) Sidewalk Cafe Dataset, downloaded from
     # https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu
