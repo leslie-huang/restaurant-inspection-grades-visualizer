@@ -1,1 +1,3 @@
-*.csv
+DOHMH_New_York_City_Restaurant_Inspection_Results.csv
+*.pdf
+!sample output/**/*.pdf

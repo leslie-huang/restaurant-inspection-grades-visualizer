@@ -3,8 +3,10 @@
 # Description: This program imports raw data files 
 # (#1: Restaurant Grades Data, #2: Sidewalk Cafe Data), 
 # implements data cleaning, and saves the cleaned and merged file.
+# When this file is run, it will output a CSV of the dataset.
+# When this program is called from main.py, it generates a dataframe used within the main.
 #
-# I have written all non-trivial data cleaning as functions to allow for 
+# Note: I have written all non-trivial data cleaning as functions to allow for 
 # unit testing. However, data cleaning is specific to the messiness of the data; however, 
 # I do not write functions or unittests for the execution of simple Pandas methods, 
 # for example drop_duplicate.
@@ -12,6 +14,7 @@
 
 import pandas as pd
 import re
+import zipfile
 
 ### Helper functions for data cleaning
 
@@ -47,9 +50,16 @@ def drop_multiple_column_nulls(df, cols_to_drop):
         df = df[pd.notnull(df[col])]
     return df
 
+### This is the main datacleaning function
+
 def clean_data():
-    ### read in (1) Restaurant Inspection Dataset downloaded from  https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/xx67-kt59
-    # PLEASE NOTE: The online version is regularly updated. I use the 11/27/16 version.
+    ### read in (1) ZIP archive of Restaurant Inspection Dataset downloaded from  https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/xx67-kt59
+    # PLEASE NOTE: The online version located at that URL is regularly updated. 
+    # I use the 11/27/16 version (ZIP = 25 MB, uncompressed CSV = 160 MB)
+    
+    with zipfile.ZipFile("DOHMH_New_York_City_Restaurant_Inspection_Results.csv.zip", "r") as myzipfile:
+        myzipfile.extractall()
+    
     restaurant_grades = pd.read_csv("DOHMH_New_York_City_Restaurant_Inspection_Results.csv", dtype = str, keep_default_na = False, na_values = [])
     
     ### Because of the size of the dataset, processing time of this data is nontrivial. 
