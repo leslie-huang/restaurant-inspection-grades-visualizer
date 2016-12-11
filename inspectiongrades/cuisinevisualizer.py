@@ -1,3 +1,5 @@
+# Author: Leslie Huang (lh1036)
+# Attributes and methods for the cuisine visualizer
 
 import pandas as pd
 import numpy as np
@@ -18,11 +20,11 @@ class CuisineGrades(Visualizer):
 
     ### Class methods for subsetting and returning the data
     
-    def filter_data(self):
+    def filter_data(self, data):
         '''
         Returns a DF subset of the data for the cuisine in question
         '''
-        return self.data[self.data["cuisine_primary"] == self.cuisine_name]
+        return data[data["cuisine_primary"] == self.cuisine_name]
 
     ### Class methods for visualizing the data
     
@@ -30,7 +32,7 @@ class CuisineGrades(Visualizer):
         '''
         Generates pie graph of letter grades awarded in cuisine category
         '''
-        data = self.get_lettergrade_data()
+        data = self.filter_data_valid_values("grade", ["A", "B", "C", "Not Yet Graded", "Grade Pending"])
         
         data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades for {} Restaurants".format(capwords(self.cuisine_name)), rot = 0)
         plt.xlabel("Grade")
@@ -43,7 +45,7 @@ class CuisineGrades(Visualizer):
         '''
         Show boxplot of restaurant violations in this category, grouped by borough
         '''
-        data = self.get_boro_data()
+        data = self.filter_data_valid_values("boro", ["Manhattan", "Queens", "Bronx", "Brooklyn", "Staten Island"])
         
         data.boxplot(by = "boro", column = "score", return_type = "dict", rot = 90)
         plt.xlabel("Boroughs")
@@ -88,10 +90,11 @@ class CuisineGrades(Visualizer):
     def timeseries_best_and_worst(self):
         '''
         Timeseries of inspection scores for the best and worst restaurants in this zip
+        Restricted to restaurants with at least 10 inspections (to exclude outliers)
         Remember, lower is better! Higher score = more violations = dirty restaurant
         '''
-        best_data, worst_data, = self.get_best_and_worst_data()
-        best_name, worst_name = self.get_best_and_worst_names()
+        best_data, worst_data, = self.get_best_and_worst_data(10)
+        best_name, worst_name = self.get_best_and_worst_names(10)
         x_best, y_best = best_data["inspectiondate"], best_data["score"]
         x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 

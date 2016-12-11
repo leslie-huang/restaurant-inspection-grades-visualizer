@@ -1,3 +1,5 @@
+# Author: Leslie Huang (lh1036)
+# Attributes and methods for the restaurant visualizer
 
 import pandas as pd
 import numpy as np
@@ -16,11 +18,11 @@ class RestaurantGrades(Visualizer):
         
     ### Class methods for subsetting and returning the data
 
-    def filter_data(self):
+    def filter_data(self, data):
         '''
         Returns a DF subset for the specified restaurant, sorted by date
         '''
-        return self.data.ix[self.restaurant_name].sort_values(by = "inspectiondate")
+        return data.ix[self.restaurant_name].sort_values(by = "inspectiondate")
     
     ### Class methods for visualizing the data
 
@@ -28,7 +30,7 @@ class RestaurantGrades(Visualizer):
         '''
         Plots a line graph of inspection violation scores over time
         '''
-        data = self.filter_data()        
+        data = self.filter_data(self.data)        
         
         plt.plot_date(x = data["inspectiondate"], y = data["score"], fmt = "r-")
         plt.xticks(rotation = "vertical")
@@ -45,7 +47,7 @@ class RestaurantGrades(Visualizer):
         '''
         Plots a bar graph of frequency of letter grades received
         '''
-        data = self.get_lettergrade_data()
+        data = self.filter_data_valid_values("grade", ["A", "B", "C", "Not Yet Graded", "Grade Pending"])
         
         data["grade"].value_counts().plot(kind = "bar", rot = 0, title = "Letter Grades Awarded to {}".format(capwords(self.restaurant_name)))
         plt.xlabel("Grade")

@@ -15,11 +15,6 @@ from datacleaning import clean_data
 restaurant_data = clean_data()
 restaurant_data = restaurant_data.set_index(["restaurant"])
 
-# convert date to datetime object for timeseries analysis
-for col_name in ["inspectiondate", "gradedate", "issuance_dd"]:
-    restaurant_data[col_name] = pd.to_datetime(restaurant_data[col_name], format = "%m/%d/%Y", errors = "coerce")
-    
-
 if __name__ == "__main__":
 
     try:

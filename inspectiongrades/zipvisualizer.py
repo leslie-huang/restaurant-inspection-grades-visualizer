@@ -1,3 +1,5 @@
+# Author: Leslie Huang (lh1036)
+# Attributes and methods for the zipcode visualizer
 
 import pandas as pd
 import numpy as np
@@ -16,11 +18,11 @@ class ZipGrades(Visualizer):
         
     ### Methods to subset appropriate data, perform calculations and sort to prepare for graphing
 
-    def filter_data(self):
+    def filter_data(self, data):
         '''
         Returns a DF subset of the data for the zipcode in question
         '''
-        return self.data[self.data["zipcode"] == self.zipcode]
+        return data[data["zipcode"] == self.zipcode]
         
     ### Methods to generate different visualizations of data
     
@@ -28,7 +30,7 @@ class ZipGrades(Visualizer):
         '''
         Generates pie graph of letter grades awarded in cuisine category
         '''
-        data = self.get_lettergrade_data()
+        data = self.filter_data_valid_values("grade", ["A", "B", "C", "Not Yet Graded", "Grade Pending"])
                 
         data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Zipcode: {}".format(self.zipcode))
         plt.xlabel("Grade")
@@ -68,10 +70,11 @@ class ZipGrades(Visualizer):
     def timeseries_best_and_worst(self):
         '''
         Timeseries of inspection scores for the best and worst restaurants in this zip
+        Restricted to restaurants with at least 10 inspections (to exclude outliers)
         Remember, lower is better! Higher score = more violations = dirty restaurant
         '''
-        best_data, worst_data, = self.get_best_and_worst_data()
-        best_name, worst_name = self.get_best_and_worst_names()
+        best_data, worst_data, = self.get_best_and_worst_data(10)
+        best_name, worst_name = self.get_best_and_worst_names(10)
         x_best, y_best = best_data["inspectiondate"], best_data["score"]
         x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 

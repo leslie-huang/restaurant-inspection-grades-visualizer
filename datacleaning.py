@@ -131,6 +131,11 @@ def clean_data():
     
     # add a label for restaurants that don't have sidewalk cafes
     merged["swc_type"] = merged["swc_type"].replace(np.nan, "no cafe", regex = True)
+
+    # convert dates to datetime object for timeseries analysis
+    for col_name in ["inspectiondate", "gradedate", "issuance_dd"]:
+        merged[col_name] = pd.to_datetime(merged[col_name], format = "%m/%d/%Y", errors = "coerce")
+    
     
     return merged
 
