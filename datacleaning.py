@@ -3,16 +3,17 @@
 # Description: This program imports raw data files 
 # (#1: Restaurant Grades Data, #2: Sidewalk Cafe Data), 
 # implements data cleaning, and saves the cleaned and merged file.
+#
 # When this file is run, it will output a CSV of the dataset.
-# When this program is called from main.py, it generates a dataframe used within the main.
+# When this program is called from main.py, it generates a dataframe 
+# used within the main.
 #
 # Note: I have written all non-trivial data cleaning as functions to allow for 
 # unit testing. However, data cleaning is specific to the messiness of the data; however, 
-# I do not write functions or unittests for the execution of simple Pandas methods, 
-# for example drop_duplicate.
-
+# I did not write functions or unittests for the execution of simple Pandas methods.
 
 import pandas as pd
+import numpy as np
 import re
 import zipfile
 
@@ -50,23 +51,22 @@ def drop_multiple_column_nulls(df, cols_to_drop):
         df = df[pd.notnull(df[col])]
     return df
 
-### This is the main datacleaning function
+### This is the main datacleaning
 
 def clean_data():
+    
     ### read in (1) ZIP archive of Restaurant Inspection Dataset downloaded from  https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/xx67-kt59
     # PLEASE NOTE: The online version located at that URL is regularly updated. 
     # I use the 11/27/16 version (ZIP = 25 MB, uncompressed CSV = 160 MB)
-    
     with zipfile.ZipFile("DOHMH_New_York_City_Restaurant_Inspection_Results.csv.zip", "r") as myzipfile:
         myzipfile.extractall()
     
     restaurant_grades = pd.read_csv("DOHMH_New_York_City_Restaurant_Inspection_Results.csv", dtype = str, keep_default_na = False, na_values = [])
     
-    ### Because of the size of the dataset, processing time of this data is nontrivial. 
-    # Thus, I proceed in the following steps:
+    ### Because of the dataset's size, processing time is nontrivial. Thus, I proceed in the following steps:
     # (1) Fixing names and formatting, so that references are consistent
     # (2) drop rows and columns that won't be used, to reduce the size of the DF that undergoes cleaning
-    # (3) clean remaining DF
+    # (3) cleaning
     
     ### (1) Fixing names and formatting
     restaurant_grades = clean_colnames(restaurant_grades)
@@ -75,14 +75,13 @@ def clean_data():
     
     ### (2) Dropping
     
-    # drop unneeded columns
+    ## drop unneeded columns
     restaurant_grades = restaurant_grades.drop(["recorddate", "camis", "action", "phone", "violationcode"], axis = 1)
     
-    # drop rows:
+    ## Drop rows:
     restaurant_grades = restaurant_grades.drop_duplicates()
 
-    # drop observations missing essential information:
-    # (a) name, category, street address or (b) both score and grade
+    # Missing essential information: (a) name, category, address, or both score and grade
     restaurant_grades = drop_multiple_column_nulls(restaurant_grades, ["restaurant", "street", "cuisinedescription"])
     restaurant_grades = restaurant_grades[pd.notnull(restaurant_grades["score"]) | pd.notnull(restaurant_grades["grade"])]
     
@@ -105,9 +104,10 @@ def clean_data():
     restaurant_grades = make_primary_cuisine(restaurant_grades, "cuisinedescription", "cuisine_primary")
     restaurant_grades["cuisine_primary"].replace(to_replace = ["cafÃ£Â©", "cafã©"], value = "cafe", inplace = True)  
       
+      
     ### Read in (2) Sidewalk Cafe Dataset, downloaded from
     # https://data.cityofnewyork.us/Business/Sidewalk-Caf-Licenses-and-Applications/qcdj-rwhu
-    # I use the 12/2/2016 version.
+    # NOTE: This dataset is constantly updated. I use the 12/2/2016 version.
     
     sidewalk_licenses = pd.read_csv("Sidewalk_Caf__Licenses_and_Applications.csv", dtype = str, keep_default_na = False, na_values = [])
 
@@ -127,7 +127,13 @@ def clean_data():
 ### Merge and output the merged file
 
     # merge on unique address_id var
-    return pd.merge(restaurant_grades, sidewalk_licenses, left_on = "address_id", right_on = "address_id", how = "left")
+    merged = pd.merge(restaurant_grades, sidewalk_licenses, left_on = "address_id", right_on = "address_id", how = "left")
+    
+    # add a label for restaurants that don't have sidewalk cafes
+    merged["swc_type"] = merged["swc_type"].replace(np.nan, "no cafe", regex = True)
+    
+    return merged
+
 
 if __name__ == "__main__":    
     

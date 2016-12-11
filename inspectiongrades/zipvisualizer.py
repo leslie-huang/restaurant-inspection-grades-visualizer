@@ -27,9 +27,6 @@ class ZipGrades(object):
         '''
         data = self.get_zip_data()
         
-        # add an index label for restaurants that don't have any sidewalk cafe
-        data.loc[:, "swc_type"] = data["swc_type"].replace(np.nan, "no cafe", regex = True)
-        
         return data.groupby("swc_type").mean()
     
     def get_lettergrade_data(self):

@@ -1,9 +1,7 @@
 # Author: Leslie Huang (lh1036)
 # Description: Helper functions to prompt and handle userinput of year in the "main"
 
-from restaurant.restaurantvisualizer import RestaurantGrades
-from cuisine.cuisinevisualizer import CuisineGrades
-from zipcode.zipvisualizer import ZipGrades
+from inspectiongrades import CuisineGrades, RestaurantGrades, ZipGrades
 from exceptions import *
 
 def quitting_input(prompt, input_function = input):
