@@ -88,6 +88,9 @@ def clean_data():
     # drop observations with negative scores (data entry error)
     restaurant_grades = restaurant_grades.loc[pd.to_numeric(restaurant_grades["score"], errors = "ignore") >= 0]
     
+    # drop restaurants with only one recorded inspection
+    
+    
     ### (3) Cleanup
     
     # clean up whitespace and lowercase entire DF

@@ -120,6 +120,7 @@ def validate_restaurant_name(input_name, restaurant_data):
     Validate that user input is a valid restaurant that appears in restaurant_data
     Raises InvalidRestaurantNameError if (1) input is not in data or 
     (2) input is invalid type (e.g. an int)
+    Note: I exclude restaurants that have only had 1 inspection
     '''
     
     try:
@@ -129,7 +130,13 @@ def validate_restaurant_name(input_name, restaurant_data):
             raise InvalidRestaurantNameError()
         
         else:
-            return restaurant_name
+            restaurant_counts = restaurant_data.index.value_counts()
+            included_restaurant_names = restaurant_counts[restaurant_counts > 1].index.values
             
+            if restaurant_name in included_restaurant_names:
+                return restaurant_name
+            else:
+                raise InvalidRestaurantNameError()
+
     except AttributeError:
         raise InvalidRestaurantNameError()

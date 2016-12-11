@@ -21,7 +21,7 @@ class Visualizer(object):
         @param data: Automatically set to the filtered base dataset for each class
         @param column_name: The column we are using to filter observations
         @param valid_values: A list of valid values for observations in column_name (others will be dropped)
-        Also formats capitalization of the values (because dataframe is all lowecase)
+        Also formats capitalization of the values (because dataframe is all lowercase)
         '''
         data = self.filter_data(self.data)
         data[column_name] = data[column_name].apply(capwords)

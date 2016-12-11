@@ -20,9 +20,13 @@ class RestaurantGrades(Visualizer):
 
     def filter_data(self, data):
         '''
-        Returns a DF subset for the specified restaurant, sorted by date
+        Returns a DF subset for the specified restaurant
         '''
-        return data.ix[self.restaurant_name].sort_values(by = "inspectiondate")
+        data = data.sort_values(by = "inspectiondate")
+        if isinstance(data, pd.DataFrame):
+            return data.loc[self.restaurant_name]
+        elif isinstance(data, pd.Series):
+            return data.to_frame()
     
     ### Class methods for visualizing the data
 
