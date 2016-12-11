@@ -3,45 +3,34 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from string import capwords
+from .visualizer import Visualizer
 plt.style.use("ggplot")
 
-class RestaurantGrades(object):
+class RestaurantGrades(Visualizer):
     def __init__(self, restaurant_name, data):
         '''
         Constructor
         '''
-        self.data = data
+        super(RestaurantGrades, self).__init__(data)
         self.restaurant_name = restaurant_name
         
     ### Class methods for subsetting and returning the data
 
-    def get_restaurant_data(self):
+    def filter_data(self):
         '''
         Returns a DF subset for the specified restaurant, sorted by date
         '''
         return self.data.ix[self.restaurant_name].sort_values(by = "inspectiondate")
     
-    def get_lettergrades(self):
-        '''
-        Returns a DF of lettergrades formatted for graphing
-        '''
-        data = self.get_restaurant_data()
-        grades = ["a", "b", "c", "not yet graded", "grade pending"]
-        data = data[data["grade"].isin(grades)]
-        data["grade"] = data["grade"].apply(capwords)
-        return data
-        
     ### Class methods for visualizing the data
 
     def graph_restaurant_timeseries(self):
         '''
         Plots a line graph of inspection violation scores over time
         '''
-        data = self.get_restaurant_data()
-        y = data["score"]
-        x = data["inspectiondate"]
+        data = self.filter_data()
         
-        plt.plot_date(x = x, y = y, fmt = "r-")
+        plt.plot_date(x = data["score"], y = data["inspectiondate"], fmt = "r-")
         plt.xticks(rotation = "vertical")
         plt.ylabel("Inspection Violations")
         plt.title("Inspection Violations at {} Over Time".format(capwords(self.restaurant_name)))
@@ -54,9 +43,9 @@ class RestaurantGrades(object):
             
     def graph_restaurant_lettergrade_frequency(self):
         '''
-        Plots a bar graph of frequency of letter grades
+        Plots a bar graph of frequency of letter grades received
         '''
-        data = self.get_lettergrades()
+        data = self.get_lettergrade_data()
         
         data["grade"].value_counts().plot(kind = "bar", rot = 0, title = "Letter Grades Awarded to {}".format(capwords(self.restaurant_name)))
         plt.xlabel("Grade")

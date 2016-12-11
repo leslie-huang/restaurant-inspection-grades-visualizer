@@ -2,59 +2,27 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from .visualizer import Visualizer
 from string import capwords
 
 plt.style.use("ggplot")
 pd.options.mode.chained_assignment = None
 
-class CuisineGrades(object):
+class CuisineGrades(Visualizer):
     def __init__(self, cuisine_name, data):
         '''
         Constructor
         '''
-        self.data = data
+        super(CuisineGrades, self).__init__(data)
         self.cuisine_name = cuisine_name
 
     ### Class methods for subsetting and returning the data
     
-    def get_cuisine_data(self):
+    def filter_data(self):
         '''
         Returns a DF subset of the data for the cuisine in question
         '''
         return self.data[self.data["cuisine_primary"] == self.cuisine_name]
-    
-    def group_by_sidewalk(self):
-        '''
-        Returns a GroupBy DF of mean scores by sidewalk cafe type
-        '''
-        data = self.get_cuisine_data()
-        
-        return data.groupby("swc_type").mean()
-    
-    def get_lettergrade_data(self):
-        '''
-        Gets data on lettergrades
-        '''
-        data = self.get_cuisine_data()
-        grades = ["a", "b", "c", "not yet graded", "grade pending"]
-        return (data[data["grade"].isin(grades)], grades)
-    
-    def calculate_mean_by_restaurant(self):
-        '''
-        Returns a DF of mean inspection violations per restaurant, sorted ascending value
-        '''
-        data = self.get_cuisine_data()
-        data = data.groupby(data.index)[["score"]].mean()
-        return data.sort_values(by = "score")
-    
-    def get_boro_data(self):
-        '''
-        Gets data on the 5 boroughs and formats labels
-        '''
-        data = self.get_cuisine_data()
-        data["boro"] = data["boro"].apply(capwords)
-        boros = ["Manhattan", "Queens", "Bronx", "Brooklyn", "Staten Island"]
-        return data[data["boro"].isin(boros)]
 
     ### Class methods for visualizing the data
     
@@ -62,9 +30,9 @@ class CuisineGrades(object):
         '''
         Generates pie graph of letter grades awarded in cuisine category
         '''
-        data, grades = self.get_lettergrade_data()
+        data = self.get_lettergrade_data()
         
-        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Category: {}".format(capwords(self.cuisine_name)), labels = map(capwords, grades), rot = 0)
+        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Category: {}".format(capwords(self.cuisine_name)), rot = 0)
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
         
@@ -85,7 +53,6 @@ class CuisineGrades(object):
         # add title and get rid of automatically added title
         plt.title("Spread of Violations by Borough for {} Restaurants".format(capwords(self.cuisine_name)))
         plt.suptitle("")
-        
         plt.savefig("{}_restaurant_violations_by_borough.pdf".format(capwords(self.cuisine_name)))
         plt.close()    
         
