@@ -28,9 +28,9 @@ class RestaurantGrades(Visualizer):
         '''
         Plots a line graph of inspection violation scores over time
         '''
-        data = self.filter_data()
+        data = self.filter_data()        
         
-        plt.plot_date(x = data["score"], y = data["inspectiondate"], fmt = "r-")
+        plt.plot_date(x = data["inspectiondate"], y = data["score"], fmt = "r-")
         plt.xticks(rotation = "vertical")
         plt.ylabel("Inspection Violations")
         plt.title("Inspection Violations at {} Over Time".format(capwords(self.restaurant_name)))
@@ -58,6 +58,9 @@ class RestaurantGrades(Visualizer):
         plt.close()   
                 
     def make_graphs(self):
+        '''
+        Calls all graphing methods for this class
+        '''
         self.graph_restaurant_timeseries()
         self.graph_restaurant_lettergrade_frequency()
         

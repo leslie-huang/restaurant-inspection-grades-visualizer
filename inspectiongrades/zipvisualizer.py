@@ -90,6 +90,9 @@ class ZipGrades(Visualizer):
         plt.close()   
             
     def make_graphs(self):
+        '''
+        Calls all graphing methods for this class
+        '''
         self.graph_lettergrade_frequency()
         self.boxplot_zip_scores()
         self.violations_by_category()

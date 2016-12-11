@@ -75,7 +75,7 @@ class Visualizer(object):
     def get_best_and_worst_data(self):
         '''
         Returns a tuple containing (DF of best restaurant, DF of worst restaurant)
-        Used in zipvisualizer and cuisinevisualizer
+        Used in zipvisualizer
         '''
         data = self.filter_data()
         data = data[data.index.isin(self.get_best_and_worst_names())]

@@ -32,7 +32,7 @@ class CuisineGrades(Visualizer):
         '''
         data = self.get_lettergrade_data()
         
-        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades in Category: {}".format(capwords(self.cuisine_name)), rot = 0)
+        data.grade.value_counts().plot(kind = "pie", title = "Distribution of Letter Grades for {} Restaurants".format(capwords(self.cuisine_name)), rot = 0)
         plt.xlabel("Grade")
         plt.ylabel("Number of Times Awarded")
         
@@ -64,7 +64,7 @@ class CuisineGrades(Visualizer):
                 
         grouped.score.plot(kind = "bar", rot = 90)
         plt.subplots_adjust(bottom = 0.5)
-        plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type: {}".format(capwords(self.cuisine_name)))
+        plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type for {} Restaurants".format(capwords(self.cuisine_name)))
         plt.ylabel("Average Inspection Violation Scores")
         plt.xlabel("Type of Sidewalk Cafe (if any)")
         
@@ -73,7 +73,7 @@ class CuisineGrades(Visualizer):
             
     def violations_per_restaurant(self):
         '''
-        Distribution of Mean violations per restaurant
+        Distribution of mean violations per restaurant
         '''
         data = self.calculate_mean_by_restaurant()
         data.plot(kind = "bar", legend = False)
@@ -83,11 +83,39 @@ class CuisineGrades(Visualizer):
         plt.xlabel("{} Restaurants".format(capwords(self.cuisine_name)))
         
         plt.savefig("{}_restaurant_distribution.pdf".format(capwords(self.cuisine_name)))
-        plt.close()    
+        plt.close() 
+    
+    def timeseries_best_and_worst(self):
+        '''
+        Timeseries of inspection scores for the best and worst restaurants in this zip
+        Remember, lower is better! Higher score = more violations = dirty restaurant
+        '''
+        best_data, worst_data, = self.get_best_and_worst_data()
+        best_name, worst_name = self.get_best_and_worst_names()
+        x_best, y_best = best_data["inspectiondate"], best_data["score"]
+        x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
+
+        plt.plot_date(x = x_best, y = y_best, fmt = "r-", label = "{}".format(capwords(best_name)))
+        plt.plot_date(x = x_worst, y = y_worst, fmt = "b-", label = "{}".format(capwords(worst_name)))
+        plt.xticks(rotation = "vertical")
+        
+        plt.legend(loc = "upper right")
+        plt.ylabel("Inspection Violations Score")
+        plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) {} Restaurants".format(capwords(best_name), capwords(worst_name), capwords(self.cuisine_name)))
+        
+        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -100), xycoords = "axes fraction", textcoords = "offset points", va = "top")
+        plt.subplots_adjust(bottom = 0.5)
+        
+        plt.savefig("{}_best_worst_restaurants_timeseries.pdf".format(capwords(self.cuisine_name)))
+        plt.close()   
             
     def make_graphs(self):
+        '''
+        Calls all graphing methods for this class
+        '''
         self.graph_lettergrade_frequency()
         self.boxplot_by_boro()
         self.bargraphs_by_sidewalk_type()
         self.violations_per_restaurant()
+        self.timeseries_best_and_worst()
         
