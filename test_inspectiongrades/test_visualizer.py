@@ -1,9 +1,9 @@
 # Author: Leslie Huang (lh1036)
 # Description: Unit testing for the Visualizer superclass methods
-# I do not write trivial tests for methods that implement a simple Pandas operation
+# I do not include trivial tests for methods that implement a simple Pandas operation
 # e.g. group_by_sidewalk()
 
-from visualizer import Visualizer
+from inspectiongrades.visualizer import Visualizer
 import unittest
 import pandas as pd
 import numpy as np
