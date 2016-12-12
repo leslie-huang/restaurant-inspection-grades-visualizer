@@ -79,7 +79,7 @@ def prompt_for_zip(restaurant_data, input_function = input):
     
     while True:
         try:
-            userinput = quitting_input("Please enter a zipcode or 'finish' if you are done.", input_function)
+            userinput = quitting_input("Please enter a zipcode or 'finish' if you are done.\n", input_function)
             return validate_zip(userinput, restaurant_data)
             
         except InvalidZipError as e:
@@ -108,7 +108,7 @@ def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows
     
     while True:
         try:
-            userinput = quitting_input("Please enter a restaurant name or 'finish' if you are done.", input_function)
+            userinput = quitting_input("Please enter a restaurant name or 'finish' if you are done.\n", input_function)
             return validate_restaurant_name(userinput, restaurant_data, min_rows)
             
         except InvalidRestaurantNameError as e:
