@@ -99,7 +99,7 @@ def validate_zip(input_zip, restaurant_data):
         return input_zip
         
 
-def prompt_for_restaurant_name(restaurant_data, input_function = input):
+def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows = 1):
     '''
     Prompt user for restaurant name. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
@@ -109,13 +109,13 @@ def prompt_for_restaurant_name(restaurant_data, input_function = input):
     while True:
         try:
             userinput = quitting_input("Please enter a restaurant name or 'finish' if you are done.", input_function)
-            return validate_restaurant_name(userinput, restaurant_data)
+            return validate_restaurant_name(userinput, restaurant_data, min_rows)
             
         except InvalidRestaurantNameError as e:
             print(e)
     
 
-def validate_restaurant_name(input_name, restaurant_data):
+def validate_restaurant_name(input_name, restaurant_data, min_rows = 1):
     '''
     Validate that user input is a valid restaurant that appears in restaurant_data
     Raises InvalidRestaurantNameError if (1) input is not in data or 
@@ -130,8 +130,9 @@ def validate_restaurant_name(input_name, restaurant_data):
             raise InvalidRestaurantNameError()
         
         else:
+            # get names of restaurants that have had > 1 inspection
             restaurant_counts = restaurant_data.index.value_counts()
-            included_restaurant_names = restaurant_counts[restaurant_counts > 1].index.values
+            included_restaurant_names = restaurant_counts[restaurant_counts > min_rows].index.values
             
             if restaurant_name in included_restaurant_names:
                 return restaurant_name

@@ -15,6 +15,7 @@ from datacleaning import clean_data
 restaurant_data = clean_data()
 restaurant_data = restaurant_data.set_index(["restaurant"])
 
+
 if __name__ == "__main__":
 
     try:

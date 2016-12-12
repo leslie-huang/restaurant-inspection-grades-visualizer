@@ -66,10 +66,9 @@ class CuisineGrades(Visualizer):
                 
         grouped.score.plot(kind = "bar", rot = 90)
         plt.subplots_adjust(bottom = 0.5)
-        plt.title("Distribution of Inspection Violations by Sidewalk Cafe Type for {} Restaurants".format(capwords(self.cuisine_name)))
+        plt.title("Inspection Violations by Cafe Type for {} Restaurants".format(capwords(self.cuisine_name)))
         plt.ylabel("Average Inspection Violation Scores")
         plt.xlabel("Type of Sidewalk Cafe (if any)")
-        
         plt.savefig("{}_restaurant_violations_by_cafe_type.pdf".format(capwords(self.cuisine_name)))
         plt.close()    
             
@@ -90,11 +89,11 @@ class CuisineGrades(Visualizer):
     def timeseries_best_and_worst(self):
         '''
         Timeseries of inspection scores for the best and worst restaurants in this zip
-        Restricted to restaurants with at least 10 inspections (to exclude outliers)
+        Restricted to restaurants with at least 15 inspections (to exclude outliers)
         Remember, lower is better! Higher score = more violations = dirty restaurant
         '''
-        best_data, worst_data, = self.get_best_and_worst_data(10)
-        best_name, worst_name = self.get_best_and_worst_names(10)
+        best_data, worst_data, = self.get_best_and_worst_data(15)
+        best_name, worst_name = self.get_best_and_worst_names(15)
         x_best, y_best = best_data["inspectiondate"], best_data["score"]
         x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 

@@ -37,7 +37,7 @@ class RestaurantDataTestCase(unittest.TestCase):
         matching to user input. I preserve the same convention here.
         '''
         data = {
-            "zipcode": [10011, 11211, 10002, 12345, 54321],
+            "zipcode": ["10011", "11211", "10002", "12345", "54321"],
             "cuisine_primary": ["thai", "pizza", "sandwiches", "french", "sandwiches"],
             "restaurant": ["thai garden", "'za for days", "sandwich world", "onion soup waterpark", "senor frog"]
                 }
@@ -75,14 +75,14 @@ class ValidateRestaurantNameTests(RestaurantDataTestCase):
         '''
         Test that function validates a restaurant in the dataset
         '''
-        self.assertEqual(validate_restaurant_name("SANDWICH world", self.dummy_data), "sandwich world")
+        self.assertEqual(validate_restaurant_name("SANDWICH world", self.dummy_data, 0), "sandwich world")
         
     def test_invalid_restaurant(self):
         '''
         Test that an invalid name raises exception
         '''
         with self.assertRaises(InvalidRestaurantNameError):
-            validate_restaurant_name("soup aquarium", self.dummy_data)
+            validate_restaurant_name("soup aquarium", self.dummy_data, 0)
             
 class ValidateZipTests(RestaurantDataTestCase):
     '''
@@ -93,7 +93,7 @@ class ValidateZipTests(RestaurantDataTestCase):
         '''
         Test that function returns zipcode as int when validated
         '''
-        self.assertEqual(validate_zip("10011", self.dummy_data), 10011)
+        self.assertEqual(validate_zip("11211", self.dummy_data), "11211")
     
     def test_invalid_zip(self):
         '''
@@ -116,14 +116,14 @@ class PromptForRestaurantTests(RestaurantDataTestCase):
         '''
         takes valid string and passes valid (lowercased) string
         '''
-        self.assertEqual(prompt_for_restaurant_name(self.dummy_data, lambda _: "Senor frog"), "senor frog")
+        self.assertEqual(prompt_for_restaurant_name(self.dummy_data, lambda _: "Senor frog", 0), "senor frog")
 
 class PromptForZipTests(RestaurantDataTestCase):
     def test_prompt_valid_zip(self):
         '''
         takes valid zipcode (as string from userinput) and passes valid zipcode (as int)
         '''
-        self.assertEqual(prompt_for_zip(self.dummy_data, lambda _: "10011"), 10011)
+        self.assertEqual(prompt_for_zip(self.dummy_data, lambda _: "10011"), "10011")
 
 if __name__ == "__main__":
     unittest.main()

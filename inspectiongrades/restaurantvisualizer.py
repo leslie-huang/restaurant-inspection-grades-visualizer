@@ -23,10 +23,7 @@ class RestaurantGrades(Visualizer):
         Returns a DF subset for the specified restaurant
         '''
         data = data.sort_values(by = "inspectiondate")
-        if isinstance(data, pd.DataFrame):
-            return data.loc[self.restaurant_name]
-        elif isinstance(data, pd.Series):
-            return data.to_frame()
+        return data.loc[[self.restaurant_name]]
     
     ### Class methods for visualizing the data
 

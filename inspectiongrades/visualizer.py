@@ -67,9 +67,7 @@ class Visualizer(object):
         grouped = data.groupby(data.index).agg(["mean", "count"])["score"]
         grouped = grouped.sort_values(by = "mean")
         grouped = grouped[grouped["count"] >= minimum_obs]
-        names = [grouped.index[0], grouped.index[-1]]
-        
-        return names
+        return [grouped.index[0], grouped.index[-1]]
         
     def get_best_and_worst_data(self, minimum_obs):
         '''
