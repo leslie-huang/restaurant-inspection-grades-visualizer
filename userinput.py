@@ -69,8 +69,7 @@ def validate_cuisine(input_cuisine, restaurant_data):
     except AttributeError:
         raise InvalidCuisineError()
 
-
-def prompt_for_zip(restaurant_data, input_function = input):
+def prompt_for_zip(restaurant_data, min_obs = 10, input_function = input):
     '''
     Prompt user for zipcode. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
@@ -80,15 +79,15 @@ def prompt_for_zip(restaurant_data, input_function = input):
     while True:
         try:
             userinput = quitting_input("Please enter a zipcode or 'finish' if you are done.\n", input_function)
-            return validate_zip(userinput, restaurant_data)
+            return validate_zip(userinput, restaurant_data, min_obs)
             
         except InvalidZipError as e:
             print(e)
 
-def validate_zip(input_zip, restaurant_data):
+def validate_zip(input_zip, restaurant_data, min_obs = 10):
     '''
     Validate that user input is a valid zipcode that appears in the data
-    Raises InvalidCuisineError if (1) input is not in data or 
+    Raises InvalidZipError if (1) input is not in data or 
     (2) input is invalid type (e.g. a string)
     '''
 
@@ -96,8 +95,20 @@ def validate_zip(input_zip, restaurant_data):
         raise InvalidZipError()
     
     else:
-        return input_zip
+        # get names of zipcodes that have > 10 inspection records
+        zip_counts = restaurant_data.zipcode.value_counts()
+        included_zips = zip_counts[zip_counts > 10]
+        # print("type of included_zips[0] is", type(included_zips[0]))
+        # print("type of min_obs is ", min_obs, type(min_obs))
+        # print("type of zip_counts[zip_counts > min_obs][0] is", type(zip_counts[zip_counts > min_obs][0]))
+        included_zips = included_zips.index.values
+        # print("type of included_zips[0] is", type(included_zips[0]))
+#         print("input zip type is", type(input_zip))
+        if input_zip not in included_zips:
+            raise InvalidZipError()
         
+        else:
+            return input_zip
 
 def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows = 1):
     '''

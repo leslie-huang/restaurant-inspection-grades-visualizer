@@ -93,14 +93,14 @@ class ValidateZipTests(RestaurantDataTestCase):
         '''
         Test that function returns zipcode as int when validated
         '''
-        self.assertEqual(validate_zip("11211", self.dummy_data), "11211")
+        self.assertEqual(validate_zip("11211", self.dummy_data, 0), "11211")
     
     def test_invalid_zip(self):
         '''
         Test that function raises exception when invalid zip is entered
         '''
         with self.assertRaises(InvalidZipError):
-            validate_zip("foo", self.dummy_data)
+            validate_zip("foo", self.dummy_data, 0)
 
 ### Unit testing of the prompt functions for cuisine, restaurant, and zipcode
 
@@ -123,7 +123,7 @@ class PromptForZipTests(RestaurantDataTestCase):
         '''
         takes valid zipcode (as string from userinput) and passes valid zipcode (as int)
         '''
-        self.assertEqual(prompt_for_zip(self.dummy_data, lambda _: "10011"), "10011")
+        self.assertEqual(prompt_for_zip(self.dummy_data, 0, lambda _: "10011"), "10011")
 
 if __name__ == "__main__":
     unittest.main()

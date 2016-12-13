@@ -65,10 +65,11 @@ class Visualizer(object):
         
         # get names of highest and lowest restaurants and filter out restaurants without enough obs
         grouped = data.groupby(data.index).agg(["mean", "count"])["score"]
+        grouped = grouped.reset_index()
         grouped = grouped.sort_values(by = "mean")
         grouped = grouped[grouped["count"] >= minimum_obs]
-        return [grouped.index[0], grouped.index[-1]]
-        
+        return [grouped.restaurant.iloc[0], grouped.restaurant.iloc[-1]]
+                
     def get_best_and_worst_data(self, minimum_obs):
         '''
         Returns a tuple containing (DF of best restaurant, DF of worst restaurant)
