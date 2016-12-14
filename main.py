@@ -11,10 +11,8 @@ from userinput import *
 from datacleaning import clean_data
 
 ### Set up the DF for analysis
-#restaurant_data = pd.read_csv("cleaned_data.csv", keep_default_na = False, na_values = [])
 restaurant_data = clean_data()
 restaurant_data = restaurant_data.set_index(["restaurant"])
-
 
 if __name__ == "__main__":
 

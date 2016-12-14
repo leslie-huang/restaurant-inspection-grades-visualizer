@@ -67,31 +67,6 @@ class ZipGrades(Visualizer):
         plt.savefig("{}_restaurant_violations_by_category.pdf".format(self.zipcode))
         plt.close()   
                 
-    def timeseries_best_and_worst(self):
-        '''
-        Timeseries of inspection scores for the best and worst restaurants in this zip
-        Restricted to restaurants with at least 5 inspections (to exclude outliers)
-        Remember, lower is better! Higher score = more violations = dirty restaurant
-        '''
-        best_data, worst_data, = self.get_best_and_worst_data(5)
-        best_name, worst_name = self.get_best_and_worst_names(5)
-        x_best, y_best = best_data["inspectiondate"], best_data["score"]
-        x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
-
-        plt.plot_date(x = x_best, y = y_best, fmt = "r-", label = "{}".format(capwords(best_name)))
-        plt.plot_date(x = x_worst, y = y_worst, fmt = "b-", label = "{}".format(capwords(worst_name)))
-        plt.xticks(rotation = "vertical")
-        
-        plt.legend(loc = "upper right")
-        plt.ylabel("Inspection Violations Score")
-        plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) Restaurants Located in {}".format(capwords(best_name), capwords(worst_name), self.zipcode))
-        
-        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -100), xycoords = "axes fraction", textcoords = "offset points", va = "top")
-        plt.subplots_adjust(bottom = 0.5)
-        
-        plt.savefig("{}_zip_best_worst_restaurants_timeseries.pdf".format(self.zipcode))
-        plt.close()   
-            
     def make_graphs(self):
         '''
         Calls all graphing methods for this class
@@ -99,5 +74,4 @@ class ZipGrades(Visualizer):
         self.graph_lettergrade_frequency()
         self.boxplot_zip_scores()
         self.violations_by_category()
-        self.timeseries_best_and_worst()
         

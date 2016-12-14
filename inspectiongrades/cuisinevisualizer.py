@@ -89,11 +89,13 @@ class CuisineGrades(Visualizer):
     def timeseries_best_and_worst(self):
         '''
         Timeseries of inspection scores for the best and worst restaurants in this zip
-        Restricted to restaurants with at least 15 inspections (to exclude outliers)
+        Restricted to restaurants with at least 10 inspections (to exclude outliers)
         Remember, lower is better! Higher score = more violations = dirty restaurant
         '''
-        best_data, worst_data, = self.get_best_and_worst_data(15)
-        best_name, worst_name = self.get_best_and_worst_names(15)
+        min_inspections = 10
+        
+        best_data, worst_data, = self.get_best_and_worst_data(min_inspections)
+        best_name, worst_name = self.get_best_and_worst_names(min_inspections)
         x_best, y_best = best_data["inspectiondate"], best_data["score"]
         x_worst, y_worst = worst_data["inspectiondate"], worst_data["score"]
 
@@ -105,7 +107,7 @@ class CuisineGrades(Visualizer):
         plt.ylabel("Inspection Violations Score")
         plt.title("Time Series of Inspection Violations for the Best ({}) \n and Worst ({}) {} Restaurants".format(capwords(best_name), capwords(worst_name), capwords(self.cuisine_name)))
         
-        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least 10 inspections are considered.", (0,0), (0, -100), xycoords = "axes fraction", textcoords = "offset points", va = "top")
+        plt.annotate("Best and worst restaurants have the lowest and highest mean inspection violations, respectively. \nTo exclude outliers, only restaurants that have received at least {} inspections are considered.".format(min_inspections), (0,0), (0, -100), xycoords = "axes fraction", textcoords = "offset points", va = "top")
         plt.subplots_adjust(bottom = 0.5)
         
         plt.savefig("{}_best_worst_restaurants_timeseries.pdf".format(capwords(self.cuisine_name)))

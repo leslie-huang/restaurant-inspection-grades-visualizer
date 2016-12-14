@@ -84,23 +84,35 @@ class ValidateRestaurantNameTests(RestaurantDataTestCase):
         with self.assertRaises(InvalidRestaurantNameError):
             validate_restaurant_name("soup aquarium", self.dummy_data, 0)
             
-class ValidateZipTests(RestaurantDataTestCase):
+class ZipTestCase(unittest.TestCase):
+    def setUp(self):
+        data = {
+            "zipcode": ["10011", "10011", "10011", "10011", "10011", "10011"],
+            "cuisine_primary": ["thai", "thai", "thai", "pizza", "pizza", "pizza"],
+            "restaurant": ["thai garden", "thai garden", "thai garden", "'za for days", "'za for days", "'za for days"]
+                }
+                
+        dummy_restaurants = pd.DataFrame(data, columns = ["zipcode", "cuisine_primary", "restaurant"])
+        self.dummy_data = dummy_restaurants.set_index("restaurant")
+            
+class ValidateZipTests(ZipTestCase):
     '''
     Tests that validate_zip returns zipcode as int
     if in dataset, or raise an exception if not
     '''
+    
     def test_valid_zip(self):
         '''
         Test that function returns zipcode as int when validated
         '''
-        self.assertEqual(validate_zip("11211", self.dummy_data, 0), "11211")
+        self.assertEqual(validate_zip("10011", self.dummy_data), "10011")
     
     def test_invalid_zip(self):
         '''
         Test that function raises exception when invalid zip is entered
         '''
         with self.assertRaises(InvalidZipError):
-            validate_zip("foo", self.dummy_data, 0)
+            validate_zip("foo", self.dummy_data)
 
 ### Unit testing of the prompt functions for cuisine, restaurant, and zipcode
 
@@ -118,12 +130,12 @@ class PromptForRestaurantTests(RestaurantDataTestCase):
         '''
         self.assertEqual(prompt_for_restaurant_name(self.dummy_data, lambda _: "Senor frog", 0), "senor frog")
 
-class PromptForZipTests(RestaurantDataTestCase):
+class PromptForZipTests(ZipTestCase):
     def test_prompt_valid_zip(self):
         '''
-        takes valid zipcode (as string from userinput) and passes valid zipcode (as int)
-        '''
-        self.assertEqual(prompt_for_zip(self.dummy_data, 0, lambda _: "10011"), "10011")
+        takes valid zipcode (as string from userinput) and passes valid zipcode
+        '''        
+        self.assertEqual(prompt_for_zip(self.dummy_data, lambda _: "10011"), "10011")
 
 if __name__ == "__main__":
     unittest.main()

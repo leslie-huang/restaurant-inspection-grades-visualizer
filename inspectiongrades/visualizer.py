@@ -58,8 +58,9 @@ class Visualizer(object):
     def get_best_and_worst_names(self, minimum_obs):
         '''
         Returns a list of 2 restaurants with lowest and highest mean inspection violations score
-        @param minimum_obs: restrict to restaurants with a certain number of inspections
+        @param minimum_obs: restrict to restaurants below a certain threshold of inspections (outliers)
         Used in zipvisualizer and cuisinevisualizer
+        Note: If there is only 1 restaurant in a zipcode or cuisine category, it will be returned as BOTH the best and worst restaurant!
         '''
         data = self.filter_data(self.data)
         

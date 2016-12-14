@@ -3,6 +3,7 @@
 
 from inspectiongrades import CuisineGrades, RestaurantGrades, ZipGrades
 from exceptions import *
+from collections import Counter
 
 def quitting_input(prompt, input_function = input):
     '''
@@ -69,7 +70,7 @@ def validate_cuisine(input_cuisine, restaurant_data):
     except AttributeError:
         raise InvalidCuisineError()
 
-def prompt_for_zip(restaurant_data, min_obs = 10, input_function = input):
+def prompt_for_zip(restaurant_data, input_function = input):
     '''
     Prompt user for zipcode. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
@@ -79,42 +80,39 @@ def prompt_for_zip(restaurant_data, min_obs = 10, input_function = input):
     while True:
         try:
             userinput = quitting_input("Please enter a zipcode or 'finish' if you are done.\n", input_function)
-            return validate_zip(userinput, restaurant_data, min_obs)
+            return validate_zip(userinput, restaurant_data)
             
         except InvalidZipError as e:
             print(e)
 
-def validate_zip(input_zip, restaurant_data, min_obs = 10):
+def validate_zip(input_zip, restaurant_data):
     '''
     Validate that user input is a valid zipcode that appears in the data
     Raises InvalidZipError if (1) input is not in data or 
     (2) input is invalid type (e.g. a string)
+    Note: to handle outliers, zipcodes must have at least 2 restaurants, each of which must have at least 2 inspection records
     '''
 
     if input_zip not in restaurant_data.zipcode.unique():
         raise InvalidZipError()
     
     else:
-        # get names of zipcodes that have > 10 inspection records
-        zip_counts = restaurant_data.zipcode.value_counts()
-        included_zips = zip_counts[zip_counts > 10]
-        # print("type of included_zips[0] is", type(included_zips[0]))
-        # print("type of min_obs is ", min_obs, type(min_obs))
-        # print("type of zip_counts[zip_counts > min_obs][0] is", type(zip_counts[zip_counts > min_obs][0]))
-        included_zips = included_zips.index.values
-        # print("type of included_zips[0] is", type(included_zips[0]))
-#         print("input zip type is", type(input_zip))
-        if input_zip not in included_zips:
-            raise InvalidZipError()
         
-        else:
+        this_zipcode = restaurant_data[restaurant_data.zipcode == input_zip]
+        restaurant_records_counts = Counter(this_zipcode.index).items()
+        
+        if len(list(() for _, count in restaurant_records_counts if count >= 2)) >= 2:
             return input_zip
+        
+        else: 
+            raise InvalidZipError()
 
-def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows = 1):
+def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows = 2):
     '''
     Prompt user for restaurant name. Repeats prompt until "finish" is entered.
     @param restaurant_data: restaurant_data DF
     @param input_function: default is the Python input method; this is to allow for unittesting
+    @param min_rows: exclude restaurants below a threshold of inspection records
     '''
     
     while True:
@@ -126,7 +124,7 @@ def prompt_for_restaurant_name(restaurant_data, input_function = input, min_rows
             print(e)
     
 
-def validate_restaurant_name(input_name, restaurant_data, min_rows = 1):
+def validate_restaurant_name(input_name, restaurant_data, min_rows = 2):
     '''
     Validate that user input is a valid restaurant that appears in restaurant_data
     Raises InvalidRestaurantNameError if (1) input is not in data or 
@@ -143,7 +141,7 @@ def validate_restaurant_name(input_name, restaurant_data, min_rows = 1):
         else:
             # get names of restaurants that have had > 1 inspection
             restaurant_counts = restaurant_data.index.value_counts()
-            included_restaurant_names = restaurant_counts[restaurant_counts > min_rows].index.values
+            included_restaurant_names = restaurant_counts[restaurant_counts >= min_rows].index.values
             
             if restaurant_name in included_restaurant_names:
                 return restaurant_name
