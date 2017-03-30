@@ -5,4 +5,4 @@ Explore the NYC health inspection grades for restaurants, integrated with the NY
 - Search by restaurant name, zipcode, or cuisine type
 
 For a tour of the program, go here:
-https://leslie-huang.github.io/Using_the_restaurant_grades_visualizer.html
+https://leslie-huang.github.io/restaurant_demo/Using_the_restaurant_grades_visualizer.html
